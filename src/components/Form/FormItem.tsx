@@ -9,9 +9,9 @@ interface FormItemProps {
 const FormItem = ({ name, children }: FormItemProps) => {
   const { values, onValueChange, validateRegister } = useContext(FormContext)
 
-  const handleChange = (value: any) => {
-    onValueChange?.(name, value)
-  }
+  // const handleChange = (value: any) => {
+  //   onValueChange?.(name, value)
+  // }
 
   useEffect(() => {
     validateRegister?.(name, () => {
