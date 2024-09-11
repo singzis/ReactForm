@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import styled from 'styled-components'
+import From from './components/Form'
 
-const StyledButton = styled.button`
+const StyledButton = styled.button.attrs({ type: 'submit' })`
   background-color: #61dafb;
   border: none;
   border-radius: 5px;
@@ -13,33 +14,80 @@ const StyledButton = styled.button`
   padding: 10px 20px;
 `
 
+const StyledInput = styled.input`
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px;
+`
+
+const StyledCheckbox = styled.input.attrs({ type: 'checkbox' })`
+  margin-right: 10px;
+`
+
 function App() {
-  const [count, setCount] = useState(0)
+  // 外部控制表单
+  const form = useRef<Record<string, any>>({})
+
+  const onFinish = (values: Record<string, any>) => {
+    console.log('Success:', values)
+  }
+
+  const onFinishFailed = (errorInfo: Record<string, any>) => {
+    console.log('Failed:', errorInfo)
+  }
+
+  const onReset = () => {
+    form.current.setFieldValues({
+      admin: 'admin',
+    })
+  }
+
+  const onLog = () => {
+    console.log('values', form.current.getFieldValues())
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-
-      <StyledButton>Styled Button</StyledButton>
+      <StyledButton onClick={onReset}>初始化admin</StyledButton>
+      <StyledButton onClick={onLog}>打印</StyledButton>
+      <From
+        ref={form}
+        initialValues={{
+          admin: 'admin',
+          password: 'xxxx122',
+          remember: true,
+        }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
+        <From.Item
+          name="admin"
+          label="admin"
+          rules={[
+            { required: true, message: 'please input your username' },
+            { min: 4, message: 'username must be at least 4 characters' },
+          ]}
+        >
+          <StyledInput />
+        </From.Item>
+        <From.Item
+          name="password"
+          label="password"
+          rules={[
+            { required: true, message: 'please input your password' },
+            { min: 6, message: 'password must be at least 6 characters' },
+          ]}
+        >
+          <StyledInput type="password" />
+        </From.Item>
+        <From.Item name="remember" valuePropName="checked">
+          <StyledCheckbox />
+        </From.Item>
+        <From.Item>
+          <StyledButton>Submit</StyledButton>
+        </From.Item>
+      </From>
     </>
   )
 }
